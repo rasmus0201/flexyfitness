@@ -2,90 +2,87 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Helpers\Api;
-use App\Helpers\ApiCache;
+use App\Flexybox\FlexyfitnessApi;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 
 class ActivitiesController extends Controller
 {
+    /**
+     * Get a users bookings
+     *
+     * @param  Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
-        $token = $request->get('token');
+        // Check if any cached activities
+        if ($cache = $request->user()->bookings()->latest()->first()) {
+            if ($cache->isFresh()) {
+                return $this->response(['data' => $cache->data]);
+            }
 
-        $cache = new ApiCache($token, storage_path(env('API_CACHE')));
-
-        if ($data = $cache->getFile('activities.json')) {
-            $data['cached'] = true;
-            return response()->json($data, $data['status']);
+            // Delete if expired
+            $cache->delete();
         }
 
-        $api = new Api($token);
-        $data = [
-            'status'    => 200,
-            'cached'    => false,
-            'msg'       => 'Success',
-            'data'      => []
-        ];
+        $api = new FlexyfitnessApi($request->user());
 
-        $activities = $api->activities();
-        if (!empty($activities)) {
-            $data['data'] = $activities;
-        }
+        $bookings = $api->activities();
 
-        $cache = new ApiCache($token, storage_path(env('API_CACHE')));
+        // Cache activities
+        $request->user()->bookings()->create([
+            'data' => $bookings
+        ]);
 
-        // Cache response
-        $cache->cacheFile('activities.json', $data);
-
-        return response()->json($data, $data['status']);
+        return $this->response(['data' => $bookings]);
     }
 
+    /**
+     * Join an activity
+     *
+     * @param  Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function join(Request $request)
     {
-        $activityId = $request->get('activityId');
-        $token = $request->get('token');
+        $this->validate($request, [
+            'activityId' => 'required|integer'
+        ]);
 
-        if (!is_string($activityId) || !ctype_digit($activityId)) {
-            return response()->json(['status' => 404, 'msg' => 'Not found'], 404);
-        }
+        // Delete activities cache
+        $request->user()->bookings()->delete();
 
-        $cache = new ApiCache($token, storage_path(env('API_CACHE')));
+        // Delete calendar cache
+        $request->user()->calendarWeeks()->delete();
 
-        //We can't "trust" the cached json file nor
-        //the activities, so just prune everything
-        $cache->deleteFile('activities.json');
-        $cache->deleteFile('calendar-*.json');
+        $api = new FlexyfitnessApi($request->user());
 
-        $api = new Api($token);
-
-        $data = $api->join($activityId);
-        $data['cached'] = false;
-
-        return response()->json($data, $data['status']);
+        return $this->response($api->join($request->get('activityId')));
     }
 
+    /**
+     * Leave an activity
+     *
+     * @param  Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function leave(Request $request)
     {
-        $bookingId = $request->get('bookingId');
-        $token = $request->get('token');
+        $this->validate($request, [
+            'bookingId' => 'required|integer'
+        ]);
 
-        if (!is_string($bookingId) || !ctype_digit($bookingId)) {
-            return response()->json(['status' => 404, 'msg' => 'Not found'], 404);
-        }
+        // Delete activities cache
+        $request->user()->bookings()->delete();
 
-        $cache = new ApiCache($token, storage_path(env('API_CACHE')));
+        // Delete calendar cache
+        $request->user()->calendarWeeks()->delete();
 
-        // We can't "trust" the cached json file nor
-        // the activities, so just prune everything
-        $cache->deleteFile('activities.json');
-        $cache->deleteFile('calendar-*.json');
+        $api = new FlexyfitnessApi($request->user());
 
-        $api = new Api($token);
-
-        $data = $api->leave($bookingId);
-        $data['cached'] = false;
-
-        return response()->json($data, 200);
+        return $this->response($api->leave($request->get('bookingId')));
     }
 }

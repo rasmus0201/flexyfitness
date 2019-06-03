@@ -82,7 +82,8 @@
                             tag: 'li',
                             items: [
                                 'Brugerens egen enhed (localStorage/cookies)',
-                                'Alle personoplysninger når man bruger App\'en vil blive behandlet af en server indenfor EU.'
+                                'Alle personoplysninger når man bruger App\'en vil blive behandlet af en server indenfor EU.',
+                                'Adgangskoder er på vores servere er opbevaret som hashværdier. (envejs-funktion kan tjekke om adgangskoden er den korrekte hashværdi)'
                             ]
                         }
                     },

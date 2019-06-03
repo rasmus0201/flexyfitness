@@ -16,19 +16,19 @@ def getBookings(username = '', password = ''):
 
     headers = {
         'Host': 'fitness.flexybox.com',
-        'Origin': 'http://fitness.flexybox.com',
+        'Origin': 'https://fitness.flexybox.com',
         'Upgrade-Insecure-Requests': '1',
         'DNT': '1',
         'Content-Type': 'application/x-www-form-urlencoded',
         'User-Agent': 'RasmusBundsgaard/OBBC UA 1.0',
-        'Referer': 'http://fitness.flexybox.com/obbc/Account/LogOn'
+        'Referer': 'https://fitness.flexybox.com/obbc/Account/LogOn'
     }
     s = requests.Session()
 
     s.headers = headers;
 
     loggedIn = s.post(
-        'http://fitness.flexybox.com/obbc/Account/LogOn',
+        'https://fitness.flexybox.com/obbc/Account/LogOn',
         data = creds
     )
 
@@ -37,7 +37,7 @@ def getBookings(username = '', password = ''):
     if html.find('div', {'class': 'validation-summary-errors'}):
         return {'msg': 'Forkert brugernavn/adgangskode', 'status': 401}
 
-    viewFrontpage = s.get('http://fitness.flexybox.com/obbc')
+    viewFrontpage = s.get('https://fitness.flexybox.com/obbc')
 
     html = BeautifulSoup(viewFrontpage.text, "html.parser")
 

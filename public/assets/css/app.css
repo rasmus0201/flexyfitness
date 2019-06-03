@@ -4062,6 +4062,14 @@ mark,
   width: calc(100% / 7);
 }
 
+.mydata__title,
+.bookings__title {
+  min-height: 3.5rem;
+  font-weight: 500;
+  font-size: 1.5em;
+  margin-bottom: -1.5rem;
+}
+
 .calendar__buttons,
 .calendar__options {
   z-index: 2;
@@ -4094,12 +4102,5 @@ mark,
   flex-basis: calc(100% / 7);
   height: 100%;
   width: 100%;
-}
-
-.bookings__title {
-  min-height: 3.5rem;
-  font-weight: 500;
-  font-size: 1.5em;
-  margin-bottom: -1.5rem;
 }
 

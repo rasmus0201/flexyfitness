@@ -6,12 +6,12 @@
                 <div>
                     <form>
                         <v-text-field
-                            v-model="user"
+                            v-model="username"
                             v-validate="'required'"
-                            name="user"
-                            data-vv-name="user"
-                            :error-messages="errors.collect('user')"
-                            :label="dictionary.attributes.user"
+                            name="username"
+                            data-vv-name="username"
+                            :error-messages="errors.collect('username')"
+                            :label="dictionary.attributes.username"
                             :disabled="loading"
                             required
                         ></v-text-field>
@@ -44,16 +44,16 @@
         },
 
         data: () => ({
-            user: '',
+            username: '',
             password: '',
             loading: false,
             dictionary: {
                 attributes: {
-                    user: 'Email/Telefon/Medlemsnr',
+                    username: 'Email/Telefon/Medlemsnr',
                     password: 'Password'
                 },
                 custom: {
-                    user: {
+                    username: {
                         required: () => 'Skal udfyldes'
                     },
                     password: {
@@ -65,12 +65,6 @@
 
         mounted () {
             this.$validator.localize('en', this.dictionary);
-        },
-
-        computed: {
-            token() {
-                return btoa(this.user + ':' + this.password);
-            },
         },
 
         methods: {
@@ -93,7 +87,7 @@
             auth() {
                 this.loading = true;
 
-                axios.post('/api/user/auth', { token: this.token })
+                axios.post('/api/user/auth', { username: this.username, password: this.password })
                     .then(response => {
                         this.notify(response.data.msg);
                         this.$emit('login', response.data.data.token);

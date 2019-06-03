@@ -2,74 +2,85 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Helpers\Api;
-use App\Helpers\Helper;
-use App\Helpers\ApiCache;
+use App\User;
+use App\Support\Token;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Crypt;
+use App\Flexybox\FlexyfitnessApi;
 
 class UserController extends Controller
 {
+    /**
+     * Log user in. Create new user if not existing
+     * Returns a token for further api requests
+     *
+     * @param  Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function auth(Request $request)
     {
-        // This token is the "plain text" credentials,
-        // We are going to encrypt them using AES-256-CBC
-        $token = rawurldecode($request->get('token'));
+        $this->validate($request, [
+            'username' => 'required',
+            'password' => 'required'
+        ]);
 
-        if (!Helper::tokenValid($token)) {
-            return response()->json(['status' => 401, 'msg' => 'Unauthorized'], 401);
-        }
+        $user = new User;
+        $user->username = $request->get('username');
+        $user->setApiPasswordAttribute($request->get('password'));
 
-        $cache = new ApiCache($token, storage_path(env('API_CACHE')));
-
-        if ($data = $cache->getFile('auth.json', '48 hours')) {
-            $data['cached'] = true;
-            return response()->json($data, $data['status']);
-        }
-
-        $api = new Api($token);
+        $api = new FlexyfitnessApi($user);
 
         $data = $api->auth();
-        $data['cached'] = false;
 
-        if ($data['status'] == 200) {
-            // Cache response
-
-            // Disabled for now
-            // $cache->cacheFile('auth.json', $data);
+        if ($data['status'] !== 200) {
+            return $this->unauthorized();
         }
 
+        $token = $user->getApiCredentials();
+
+        User::updateByToken($token);
+
+        // Encrypt token for client storage
         $data['data'] = [
-            'token' => Crypt::encrypt($token)
+            'token' => Token::encrypt($token)
         ];
 
-        $request->session()->put('token', $data['data']['token']);
-
-        return response()->json($data, $data['status']);
+        return $this->response($data);
     }
 
-    public function delete()
+    /**
+     * Delete a user an all associated data
+     *
+     * @param  Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function mydata(Request $request)
     {
-        try {
-            $token = $request->get('token');
-            $startOfWeek = Helper::startOfWeek($timestamp);
+        $user = $request->user();
+        $data = [
+            'data' => [
+                'user' => $user->makeHidden(['id']),
+                'bookings' => $user->bookings()->get()->makeHidden(['id', 'user_id']),
+                'calendars' => $user->calendarWeeks()->get()->makeHidden(['id', 'user_id'])
+            ]
+        ];
 
-            $cache = new ApiCache($token, storage_path(env('API_CACHE')));
+        return $this->response($data);
+    }
 
-            //User requested deletion
-            $deleted = $cache->deleteUserDir();
+    /**
+     * Delete a user an all associated data
+     *
+     * @param  Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function delete(Request $request)
+    {
+        // Delete everything related to user
+        $request->user()->nuke();
 
-            $res = [
-                'status'    => $deleted ? 200 : 422,
-                'cached'    => false,
-                'msg'       => $deleted ? 'Success dine data blev slettet.' : 'Fejl, prøv igen senere.',
-                'data'      => []
-            ];
-
-            return $response->withJson($res, $res['status']);
-        } catch (\Exception $e) {
-            return response()->json(['status' => 401, 'msg' => 'Wrong token'], 401);
-        }
+        return $this->response();
     }
 }

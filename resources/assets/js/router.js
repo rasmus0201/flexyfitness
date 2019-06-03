@@ -55,6 +55,14 @@ const router = new VueRouter({
                 middleware: [auth]
             }
         },
+        {
+            path: '/mydata',
+            name: 'mydata',
+            component: require('./views/MyData').default,
+            meta: {
+                middleware: [auth]
+            }
+        },
 
         // Must be at the bottom
         {

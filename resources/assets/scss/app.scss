@@ -52,6 +52,13 @@
     width: calc(100% / 7);
 }
 
+%page-title {
+    min-height: 3.5rem;
+    font-weight: 500;
+    font-size: 1.5em;
+    margin-bottom: -1.5rem;
+}
+
 .calendar {
     &__buttons,
     &__options {
@@ -88,9 +95,12 @@
 
 .bookings {
     &__title {
-        min-height: 3.5rem;
-        font-weight: 500;
-        font-size: 1.5em;
-        margin-bottom: -1.5rem;
+        @extend %page-title;
+    }
+}
+
+.mydata {
+    &__title {
+        @extend %page-title;
     }
 }

@@ -48,10 +48,10 @@
             <v-card-actions class="pa-2 align-items-end" v-if="hasAction()">
                 <v-btn
                     @click="join()"
-                    :loading="item.isLoading"
-                    :disabled="item.isLoading || item.isJoined"
+                    :loading="isLoading"
+                    :disabled="isLoading || item.isJoined"
                     small
-                    flat
+                    :flat="!isLoading"
                 >
                     <span>{{ item.isJoined ? 'Tilmeldt' : 'Tilmeld' }}</span>
                 </v-btn>
@@ -62,9 +62,12 @@
 
 <script>
     export default {
-        props: {
-            item: { required: true },
-            week: { required: true }
+        props: ['item', 'week'],
+
+        data() {
+            return {
+                isLoading: false
+            }
         },
 
         methods: {
@@ -111,7 +114,7 @@
             },
 
             toggleLoading() {
-                this.item.isLoading = !this.item.isLoading;
+                this.isLoading = !this.isLoading;
             }
         }
     }

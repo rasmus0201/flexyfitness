@@ -15,19 +15,19 @@ def getWeek(username = '', password = '', weekStart = ''):
 
     headers = {
         'Host': 'fitness.flexybox.com',
-        'Origin': 'http://fitness.flexybox.com',
+        'Origin': 'https://fitness.flexybox.com',
         'Upgrade-Insecure-Requests': '1',
         'DNT': '1',
         'Content-Type': 'application/x-www-form-urlencoded',
         'User-Agent': 'RasmusBundsgaard/OBBC UA 1.0',
-        'Referer': 'http://fitness.flexybox.com/obbc/Account/LogOn'
+        'Referer': 'https://fitness.flexybox.com/obbc/Account/LogOn'
     }
     s = requests.Session()
 
     s.headers = headers;
 
     loggedIn = s.post(
-        'http://fitness.flexybox.com/obbc/Account/LogOn',
+        'https://fitness.flexybox.com/obbc/Account/LogOn',
         data = creds
     )
 
@@ -36,7 +36,7 @@ def getWeek(username = '', password = '', weekStart = ''):
     if html.find('div', {'class': 'validation-summary-errors'}):
         return {'msg': 'Forkert brugernavn/adgangskode', 'status': 401}
 
-    viewWeek = s.get('http://fitness.flexybox.com/obbc/TeamActivity/WeekView?dayInWeek='+weekStart)
+    viewWeek = s.get('https://fitness.flexybox.com/obbc/TeamActivity/WeekView?dayInWeek='+weekStart)
 
     html = BeautifulSoup(viewWeek.text, "html.parser")
 

@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Exception;
+use App\Traits\HasApiResponse;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -11,6 +12,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Handler extends ExceptionHandler
 {
+    use HasApiResponse;
+
     /**
      * A list of the exception types that should not be reported.
      *
@@ -45,6 +48,13 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if ($exception instanceof ValidationException) {
+            return $this->response([
+                'msg' => 'Validation failed',
+                'data' => $exception->errors()
+            ], 422);
+        }
+
         return parent::render($request, $exception);
     }
 }

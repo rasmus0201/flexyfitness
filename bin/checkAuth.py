@@ -16,19 +16,19 @@ def getAuth(username = '', password = ''):
 
     headers = {
         'Host': 'fitness.flexybox.com',
-        'Origin': 'http://fitness.flexybox.com',
+        'Origin': 'https://fitness.flexybox.com',
         'Upgrade-Insecure-Requests': '1',
         'DNT': '1',
         'Content-Type': 'application/x-www-form-urlencoded',
         'User-Agent': 'RasmusBundsgaard/OBBC UA 2.0',
-        'Referer': 'http://fitness.flexybox.com/obbc/Account/LogOn'
+        'Referer': 'https://fitness.flexybox.com/obbc/Account/LogOn'
     }
     s = requests.Session()
 
     s.headers = headers;
 
     loggedIn = s.post(
-        'http://fitness.flexybox.com/obbc/Account/LogOn',
+        'https://fitness.flexybox.com/obbc/Account/LogOn',
         data = creds
     )
 

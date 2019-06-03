@@ -8,7 +8,10 @@
         <template v-if="!loading">
             <v-layout column v-for="(day, indexA) in bookings" :key="`day-${indexA}`">
                 <v-card v-if="day.bookings.length" class="mb-2 mt-3" width="100%">
-                    <v-card-title>
+                    <v-card-title v-if="day.date == 'I morgen'">
+                        I morgen
+                    </v-card-title>
+                    <v-card-title v-else>
                         {{ [day.date, 'DD/MM/YYYY'] | moment('ddd [d.] Do MMM [-] YYYY') }}
                     </v-card-title>
                 </v-card>

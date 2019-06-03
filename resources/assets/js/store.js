@@ -9,10 +9,6 @@ export default new Vuex.Store({
     state: {
         auth: false,
         token: null,
-        calendar: {
-            week: null,
-            date: null
-        },
         appName: 'OBBC Holdtilmelding'
     },
     mutations: {
@@ -24,14 +20,6 @@ export default new Vuex.Store({
         logout(state) {
             state.auth = false;
             state.token = null;
-        },
-
-        setWeek(state, week) {
-            state.calendar.week = week;
-        },
-
-        setDate(state, date) {
-            state.calendar.date = date;
-        },
+        }
     }
 });

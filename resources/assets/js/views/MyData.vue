@@ -1,0 +1,111 @@
+<template>
+    <v-container>
+        <v-layout>
+            <v-flex xs12>
+                <v-layout justify-content-center align-items-center py-0 class="mydata__title">
+                    Mine data
+                </v-layout>
+
+                <loader :loading="loading" class="mt-3"></loader>
+                <template v-if="!loading">
+                    <v-layout column>
+                        <v-btn color="primary" class="mx-0 mt-4 mb-1" @click="download">Download alle data</v-btn>
+                        <v-btn color="error" class="mx-0" @click="remove" :disabled="isDeleting">Slet alle data</v-btn>
+                    </v-layout>
+                    <p class="mb-1 font-size-5">Brugerdata:</p>
+                    <pre>{{ mydata.user }}</pre>
+                    <small>
+                        <v-icon small class="text-warning">warning</v-icon>
+                        Passwordhashes vises ikke!
+                    </small>
+                    <p class="mt-3 mb-1 font-size-5">Holdtilmeldings-data:</p>
+
+                    <pre>{{ mydata.bookings }}</pre>
+                    <p class="mt-3 mb-1 font-size-5">Kalender-data:</p>
+
+
+<!-- Begin Weird indetion -->
+<template v-if="mydata.calendars.length">
+<pre>[
+  {
+    &hellip;
+  },
+  &hellip;
+]</pre>
+    <small>
+        <v-icon small class="text-warning">warning</v-icon>
+        Der er for meget data til visning - download i stedet.
+    </small>
+</template>
+<pre v-else>{{ mydata.calendars }}</pre>
+<!-- Stop Weird indetion -->
+
+
+                </template>
+            </v-flex>
+        </v-layout>
+    </v-container>
+</template>
+
+<script>
+    import FileSaver from 'file-saver';
+
+    export default {
+        data() {
+            return {
+                loading: true,
+                isDeleting: false,
+                mydata: []
+            }
+        },
+
+        mounted() {
+            this.fetch();
+        },
+
+        methods: {
+            fetch() {
+                const url = '/api/user/mydata';
+
+                axios.post(url, { token: this.$store.state.token })
+                    .then(response => {
+                        this.mydata = response.data.data;
+                    })
+                    .catch(error => {
+
+                        // TODO Display snackbar error
+                        console.log(error);
+                    })
+                    .finally(() => {
+                        this.loading = false;
+                    });
+            },
+
+            download() {
+                const file = new Blob([JSON.stringify(this.mydata)], {
+                    type: 'application/json;charset=utf-8'
+                });
+
+                FileSaver.saveAs(file, 'mydata.json');
+            },
+
+            remove() {
+                this.isDeleting = true;
+                const url = '/api/user/delete';
+
+                axios.post(url, { token: this.$store.state.token })
+                    .then(response => {
+                        this.$router.push({name: 'logout'});
+                    })
+                    .catch(error => {
+
+                        // TODO Display snackbar error
+                        console.log(error);
+                    })
+                    .finally(() => {
+                        this.isDeleting = false;
+                    });
+            }
+        }
+    }
+</script>

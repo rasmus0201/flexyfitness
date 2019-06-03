@@ -141,6 +141,12 @@
                         auth: true
                     },
                     {
+                        title: 'Mine data',
+                        route: 'mydata',
+                        icon: 'account_circle',
+                        auth: true
+                    },
+                    {
                         title: 'Privatliv',
                         route: 'privacy-policy',
                         icon: 'lock',

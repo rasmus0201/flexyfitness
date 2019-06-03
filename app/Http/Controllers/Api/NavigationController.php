@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-
 class NavigationController extends Controller
 {
+    /**
+     * OBBC custom navigation/menu pages
+     *
+     * @param  Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
         $training = [
@@ -119,11 +124,8 @@ class NavigationController extends Controller
             ],
         ];
 
-        return response()->json([
-            'status'    => 200,
-            'cached'    => false,
-            'msg'       => 'Success',
-            'data'      => array_merge($training, $membership, $about, $contact, $privacy)
-        ]);
+        $result = ['data' => array_merge($training, $membership, $about, $contact, $privacy)];
+
+        return $this->response($result);
     }
 }
