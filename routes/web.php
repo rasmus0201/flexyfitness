@@ -8,6 +8,7 @@ $router->group(['namespace' => 'Api', 'prefix' => 'api'], function ($router) {
 
         // Needs token for request
         $router->group(['middleware' => 'token'], function ($router) {
+            $router->get('/mydata', 'UserController@mydata');
             $router->post('/mydata', 'UserController@mydata');
             $router->post('/delete', 'UserController@delete');
 

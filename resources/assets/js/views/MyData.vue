@@ -82,6 +82,11 @@
             },
 
             download() {
+                if (navigator.userAgent.match(/(FlexyfitnessApp)/g)) {
+                    window.location.href = '/api/user/mydata?token=' + this.$store.state.token;
+                    return;
+                }
+
                 const file = new Blob([JSON.stringify(this.mydata)], {
                     type: 'application/json;charset=utf-8'
                 });
