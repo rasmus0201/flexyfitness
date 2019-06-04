@@ -38,7 +38,7 @@
                             wrapper: 'ul',
                             tag: 'li',
                             items: [
-                                'At hente aktivitetskalender fra Flexybox.com, og derved samle information omkring holdtilmeldning på denne app.'
+                                'At hente aktivitetskalender fra Flexybox.com, og derved samle information omkring holdtilmeldning på denne app.',
                                 'At vise brugerens holdtilmeldinger',
                                 'At cache (gemt version) behandlet data, for at kunne levere en hurtigere service.'
                             ]
