@@ -12,7 +12,8 @@
                     Den korte version:
                 </p>
                 <p class="mb-3">
-                    Vi gemmer kun din log-ind detaljer (medlemsnr/tlf/email og adgangskode) på din egen enhed (localStorage & cookies) og på hashet form på vores servere - det er muligt at se hvilke data der ligger på vores servere omrking dig, samt slette data og evt. slå opbevaring af data fra.
+                    Vi gemmer kun din log-ind detaljer (medlemsnr/tlf/email og adgangskode) på din egen enhed (localStorage & cookies) og på din adgangskode er kun gemt som hashværdi på vores servere - det er muligt at se hvilke data der ligger på vores servere omrking dig, samt slette data.
+                    Forbindelsen mellem dig og vores servere er krypteret med SSL.
                     Hvis der skulle ske et datalæk vil vi foresøge at underette de involverede parter, men da vi ikke kender e-mails på brugere er det svært at målrette en sådan besked.
                 </p>
 
@@ -37,8 +38,9 @@
                             wrapper: 'ul',
                             tag: 'li',
                             items: [
-                                'Behandling af login-oplysninger til træningscenteret (flexyfitness)',
-                                'Behandling af data fra træningscenteret. Holdinformationer inkluderende navne, tidspunkter, steder og antal tilmeldte, mv.'
+                                'At hente aktivitetskalender fra Flexybox.com, og derved samle information omkring holdtilmeldning på denne app.'
+                                'At vise brugerens holdtilmeldinger',
+                                'At cache (gemt version) behandlet data, for at kunne levere en hurtigere service.'
                             ]
                         }
                     },
@@ -48,7 +50,7 @@
                             wrapper: 'ul',
                             tag: 'li',
                             items: [
-                                'Alm. personoplysninger: Navn, e-mail, telefon, medlemsnummer, adgangskode, holdtilmeldinger',
+                                'Alm. personoplysninger: Navn, e-mail, telefon, medlemsnummer, adgangskode, holdtilmeldinger, aktivitetskalender',
                                 'Oplysninger, der er tillagt en højere grad af beskyttelse: Ingen'
                             ]
                         }
@@ -63,17 +65,17 @@
                                 'Ansatte',
                                 'Trænere',
                                 'Frivillige',
-                                'Andre som indgår i kalenderen fra flexyfitness'
+                                'Andre som indgår i kalenderen fra Flexybox.com'
                             ]
                         }
                     },
                     {
                         question: 'Hvem videregives oplysningerne til?',
-                        answer: 'Data videresendes og behandles af Flexybox.com (FlexyFitness)'
+                        answer: 'Data videresendes og behandles af Flexybox.com'
                     },
                     {
                         question: 'Hvornår sletter vi personoplysninger?',
-                        answer: 'Data opbevares i 3 måneder efter seneste aktivitet og vil herefter blive slettet automatisk. Sletning kan også foretages af brugeren.'
+                        answer: 'Data opbevares i 3 måneder efter seneste log-ind og vil herefter blive slettet automatisk. Sletning kan også foretages af brugeren.'
                     },
                     {
                         question: 'Hvordan opbevarer vi personoplysninger?',
@@ -81,9 +83,10 @@
                             wrapper: 'ul',
                             tag: 'li',
                             items: [
-                                'Brugerens egen enhed (localStorage/cookies)',
+                                'Brugerens egen enhed (localStorage/cookies) - krypterede log-ind oplysninger til Flexybox.com.',
+                                'Forbindelser til vores servere er krypteret med SSL',
                                 'Alle personoplysninger når man bruger App\'en vil blive behandlet af en server indenfor EU.',
-                                'Adgangskoder er på vores servere er opbevaret som hashværdier. (envejs-funktion kan tjekke om adgangskoden er den korrekte hashværdi)'
+                                'Adgangskoder er på vores servere er opbevaret som hashværdier.'
                             ]
                         }
                     },
