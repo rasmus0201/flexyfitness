@@ -11,6 +11,7 @@
     <body>
         <div id="app">
             <v-app>
+                <notification></notification>
                 <navigation class="mb-2"></navigation>
                 <router-view></router-view>
             </v-app>

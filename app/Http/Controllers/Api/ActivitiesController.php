@@ -16,13 +16,15 @@ class ActivitiesController extends Controller
      */
     public function index(Request $request)
     {
+        $force = $request->get('force') ?? false;
+
         // Check if any cached activities
         if ($cache = $request->user()->bookings()->latest()->first()) {
-            if ($cache->isFresh()) {
+            if ($force === false && $cache->isFresh()) {
                 return $this->response(['data' => $cache->data]);
             }
 
-            // Delete if expired
+            // Delete if expired or force refresh
             $cache->delete();
         }
 

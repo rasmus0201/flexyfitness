@@ -103,4 +103,8 @@
     &__title {
         @extend %page-title;
     }
+
+    &__json {
+        overflow-x: scroll;
+    }
 }

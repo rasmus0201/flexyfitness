@@ -13,20 +13,20 @@
                         <v-btn color="error" class="mx-0" @click="remove" :disabled="isDeleting">Slet alle data</v-btn>
                     </v-layout>
                     <p class="mb-1 font-size-5">Brugerdata:</p>
-                    <pre>{{ mydata.user }}</pre>
+                    <pre class="mydata__json">{{ mydata.user }}</pre>
                     <small>
                         <v-icon small class="text-warning">warning</v-icon>
                         Passwordhashes vises ikke!
                     </small>
                     <p class="mt-3 mb-1 font-size-5">Holdtilmeldings-data:</p>
 
-                    <pre>{{ mydata.bookings }}</pre>
+                    <pre class="mydata__json">{{ mydata.bookings }}</pre>
                     <p class="mt-3 mb-1 font-size-5">Kalender-data:</p>
 
 
 <!-- Begin Weird indetion -->
 <template v-if="mydata.calendars.length">
-<pre>[
+<pre class="mydata__json">[
   {
     &hellip;
   },
@@ -72,9 +72,7 @@
                         this.mydata = response.data.data;
                     })
                     .catch(error => {
-
-                        // TODO Display snackbar error
-                        console.log(error);
+                        this.notify('Der skete en fejl', 'error');
                     })
                     .finally(() => {
                         this.loading = false;
@@ -103,13 +101,17 @@
                         this.$router.push({name: 'logout'});
                     })
                     .catch(error => {
-
-                        // TODO Display snackbar error
-                        console.log(error);
+                        this.notify('Der skete en fejl', 'error');
                     })
                     .finally(() => {
                         this.isDeleting = false;
                     });
+            },
+
+            notify(msg, color) {
+                this.$store.commit('notify', {
+                    msg, color
+                });
             }
         }
     }

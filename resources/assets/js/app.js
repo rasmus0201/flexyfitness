@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuetify from 'vuetify';
 import VueMoment from 'vue-moment';
 import VeeValidate from 'vee-validate';
+import { VueHammer } from 'vue2-hammer';
 import moment from 'moment';
 import da from 'moment/locale/da';
 import axios from 'axios';
@@ -16,6 +17,7 @@ import '@mdi/font/css/materialdesignicons.css';
 import 'es6-promise/auto';
 import 'babel-polyfill';
 
+Vue.use(VueHammer);
 Vue.use(VueMoment, {
     moment
 });
@@ -45,15 +47,3 @@ new Vue({
     store,
     router
 });
-
-// Need a way to globally show this
-// <notification :text="notification.text" :show="notification.show" @close="notification.show = false"></notification>
-// notification: {
-//     text: null,
-//     show: false
-// }
-//
-// notify(e) {
-//     this.notification.text = e.text;
-//     this.notification.show = true;
-// },

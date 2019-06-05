@@ -9,6 +9,10 @@ export default new Vuex.Store({
     state: {
         auth: false,
         token: null,
+        snack: {
+            msg: '',
+            color: ''
+        },
         appName: 'OBBC Holdtilmelding'
     },
     mutations: {
@@ -20,6 +24,10 @@ export default new Vuex.Store({
         logout(state) {
             state.auth = false;
             state.token = null;
+        },
+
+        notify(state, snack) {
+            state.snack = snack;
         }
     }
 });

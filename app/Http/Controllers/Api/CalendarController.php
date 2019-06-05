@@ -31,14 +31,16 @@ class CalendarController extends Controller
             'date' => 'required|date|after:min_date|before:max_date'
         ]);
 
+        $force = $request->get('force') ?? false;
+
         // Check if any cached calendar weeks
         $query = $request->user()->calendarWeeks()->where('week', $startOfWeek);
         if ($cache = $query->latest()->first()) {
-            if ($cache->isFresh()) {
+            if ($force === false && $cache->isFresh()) {
                 return $this->response(['data' => $cache->data]);
             }
 
-            // Delete if expired
+            // Delete if expired or force refresh
             $cache->delete();
         }
 

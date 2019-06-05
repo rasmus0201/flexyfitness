@@ -78,9 +78,9 @@
                 });
             },
 
-            notify(msg) {
-                this.$emit('auth', {
-                    text: msg
+            notify(msg, color) {
+                this.$store.commit('notify', {
+                    msg, color
                 });
             },
 
@@ -89,11 +89,10 @@
 
                 axios.post('/api/user/auth', { username: this.username, password: this.password })
                     .then(response => {
-                        this.notify(response.data.msg);
                         this.$emit('login', response.data.data.token);
                     })
                     .catch(error => {
-                        this.notify(error.response.data.msg);
+                        this.notify('Forkert E-mail/Telefon/Medlemsnr eller adgangskode', 'error');
                     })
                     .finally(() => {
                         this.loading = false;

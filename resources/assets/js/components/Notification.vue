@@ -4,13 +4,14 @@
         :multi-line="mode === 'multi-line'"
         :color="color"
         :timeout="0"
+        class="darken-4"
         right
         top
         absolute
     >
-        {{ text }}
+        {{ message }}
         <v-btn
-            color="pink"
+            :color="btnColor"
             flat
             @click="closeNotification()"
             >
@@ -21,19 +22,34 @@
 
 <script>
     export default {
-        props: {
-            show: { required: true },
-            text: { required: true },
-            color: { default: 'blue-grey darken-4' },
-            timeout: { default: 6000 }
-        },
-
         data () {
             return {
+                snackbar: false,
+                message: '',
+                color: 'blue-grey',
+                btnColor: 'white',
+                timeout: 1750,
                 mode: 'multi-line',
-                snackbar: this.show,
                 timer: null
             }
+        },
+
+        created: function () {
+            this.$store.watch(state => state.snack, () => {
+                const {msg, color, btnColor} = this.$store.state.snack;
+
+                if (msg !== '') {
+                    this.setNotificationTimeout();
+
+                    this.snackbar = true;
+                    this.color = color;
+                    this.message = msg;
+
+                    if (btnColor) {
+                        this.btnColor = btnColor;
+                    }
+                }
+            });
         },
 
         mounted() {
@@ -67,6 +83,12 @@
             closeNotification() {
                 this.clearNotificationTimeout();
                 this.snackbar = false;
+
+                this.$store.commit('notify', {
+                    msg: '',
+                    color: ''
+                });
+
                 this.$emit('close');
             }
         }

@@ -1,70 +1,74 @@
 <template>
     <div class="calendar" v-resize="onResize">
-        <v-layout justify-content-between align-items-center py-0 class="position-relative">
-            <v-flex  p-0 xs12 sm3 md2 class="calendar__buttons">
-                <div>
-                    <v-btn
-                        class="mr-1 primary"
-                        @click="prev()"
-                        :loading="buttons.prev.loading"
-                        :disabled="buttons.prev.disabled || buttons.prev.loading"
-                        icon
-                    >
-                        <v-icon>chevron_left</v-icon>
-                    </v-btn>
-                    <v-btn
-                        class="mr-1 primary"
-                        @click="next()"
-                        :loading="buttons.next.loading"
-                        :disabled="buttons.next.disabled || buttons.next.loading"
-                        icon
-                    >
-                        <v-icon>chevron_right</v-icon>
-                    </v-btn>
-                </div>
-            </v-flex>
-            <v-flex p-0 xs12>
-                <div class="calendar__title" v-if="calendar.week">
-                    {{ calendar.week | moment('[Uge] w, MMMM - Y') }}
-                </div>
-            </v-flex>
-            <v-flex p-0 class="calendar__options">
-                <v-menu bottom left>
-                    <template v-slot:activator="{ on }">
+        <pull-to :top-load-method="refresh" :top-config="pullToConfig">
+            <v-layout justify-content-between align-items-center py-0 class="position-relative">
+                <v-flex  p-0 xs12 sm3 md2 class="calendar__buttons">
+                    <div>
                         <v-btn
-                            v-on="on"
-                            :color="'primary'"
+                            class="mr-1 primary"
+                            @click="prev()"
+                            :loading="buttons.prev.loading"
+                            :disabled="buttons.prev.disabled || buttons.prev.loading"
                             icon
                         >
-                        <v-icon>more_vert</v-icon>
-                    </v-btn>
-                    </template>
-
-                    <v-list>
-                        <v-list-tile
-                            v-for="(option, index) in options"
-                            :key="index"
-                            @click="option.action()"
+                            <v-icon>chevron_left</v-icon>
+                        </v-btn>
+                        <v-btn
+                            class="mr-1 primary"
+                            @click="next()"
+                            :loading="buttons.next.loading"
+                            :disabled="buttons.next.disabled || buttons.next.loading"
+                            icon
                         >
-                            <v-list-tile-title>{{ option.title }}</v-list-tile-title>
-                        </v-list-tile>
-                    </v-list>
-                </v-menu>
-            </v-flex>
-        </v-layout>
+                            <v-icon>chevron_right</v-icon>
+                        </v-btn>
+                    </div>
+                </v-flex>
+                <v-flex p-0 xs12>
+                    <div class="calendar__title" v-if="calendar.week">
+                        {{ calendar.week | moment('[Uge] w, MMMM - Y') }}
+                    </div>
+                </v-flex>
+                <v-flex p-0 class="calendar__options">
+                    <v-menu bottom left>
+                        <template v-slot:activator="{ on }">
+                            <v-btn
+                                v-on="on"
+                                :color="'primary'"
+                                icon
+                            >
+                            <v-icon>more_vert</v-icon>
+                        </v-btn>
+                        </template>
 
-        <loader :loading="loading"></loader>
-        <flexybox-calendar-view
-            v-if="!loading"
-            :view="calendar.view"
-            :week="calendar.week"
-            :date="calendar.date"
-            :items="calendar.items"
-        ></flexybox-calendar-view>
+                        <v-list>
+                            <v-list-tile
+                                v-for="(option, index) in options"
+                                :key="index"
+                                @click="option.action()"
+                            >
+                                <v-list-tile-title>{{ option.title }}</v-list-tile-title>
+                            </v-list-tile>
+                        </v-list>
+                    </v-menu>
+                </v-flex>
+            </v-layout>
+
+            <loader :loading="loading"></loader>
+            <flexybox-calendar-view
+                v-if="!loading"
+                :view="calendar.view"
+                :week="calendar.week"
+                :date="calendar.date"
+                :items="calendar.items"
+                v-hammer:swipe="swipe"
+            ></flexybox-calendar-view>
+        </pull-to>
     </div>
 </template>
 
 <script>
+    import PullTo from 'vue-pull-to';
     import _ from 'lodash';
 
     export default {
@@ -96,8 +100,20 @@
                             this.goToday();
                         }
                     }
-                ]
+                ],
+                pullToConfig: {
+                    pullText: 'Henter',
+                    triggerText: 'Genindlæs',
+                    loadingText: 'Henter...',
+                    doneText: '',
+                    failText: 'Fejl',
+                    loadedStayTime: 200
+                }
             }
+        },
+
+        components: {
+            PullTo
         },
 
         mounted() {
@@ -110,10 +126,32 @@
         },
 
         methods: {
-
             onResize: _.throttle(function () {
                 this.calendar.view = window.innerWidth > 994 ? 'week' : 'day';
             }, 300),
+
+            refresh(loaded) {
+                this.loading = false;
+
+                this.getCalendar(this.calendar.week, true)
+                    .then(() => {
+                        loaded('done');
+                    })
+                    .catch(() => {
+                        loaded('fail');
+                    });
+            },
+
+            swipe(event) {
+                switch(event.direction) {
+                    case Hammer.DIRECTION_LEFT:
+                        this.next();
+                        break;
+                    case Hammer.DIRECTION_RIGHT:
+                        this.prev();
+                        break;
+                }
+            },
 
             goToday() {
                 this.loading = false;
@@ -178,7 +216,7 @@
                     });
             },
 
-            getCalendar(week) {
+            getCalendar(week, force = false) {
                 return new Promise((resolve, reject) => {
                     const url = '/api/user/calendar/' + (week / 1000);
 
@@ -192,7 +230,7 @@
                     this.loading = true;
                     this.isFetching = true;
 
-                    axios.post(url, { token: this.$store.state.token })
+                    axios.post(url, { token: this.$store.state.token, force: force })
                         .then(response => {
                             const items = this.toActivities(week, response.data.data);
 
@@ -201,9 +239,10 @@
                             resolve({week, items});
                         })
                         .catch(error => {
-
-                            // TODO Display snackbar error
-                            console.log(error);
+                            this.$store.commit('notify', {
+                                msg: 'Der skete en fejl',
+                                color: 'error'
+                            });
 
                             reject();
                         })

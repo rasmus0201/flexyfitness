@@ -70,6 +70,13 @@
             }
         },
 
+        mounted() {
+            // Check that now is before the start
+            if (!this.item.special) {
+                this.item.disallowBooking = this.$moment().utc().diff(this.item.start, 'minutes') >= -10;
+            }
+        },
+
         methods: {
             isToday() {
                 if (!this.item.special) {
@@ -108,8 +115,10 @@
                     .catch(error => {
                         this.toggleLoading();
 
-                        // TODO snackbar display error
-                        console.log(error);
+                        this.$store.commit('notify', {
+                            msg: 'Der skete en fejl',
+                            color: 'error'
+                        });
                     });
             },
 
