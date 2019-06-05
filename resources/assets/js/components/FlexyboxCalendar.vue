@@ -132,6 +132,7 @@
 
             refresh(loaded) {
                 this.loading = false;
+                this.setButtonsState(true, true);
 
                 this.getCalendar(this.calendar.week, true)
                     .then(() => {
@@ -139,6 +140,9 @@
                     })
                     .catch(() => {
                         loaded('fail');
+                    })
+                    .finally(() => {
+                        this.setButtonsState(false, false);
                     });
             },
 
