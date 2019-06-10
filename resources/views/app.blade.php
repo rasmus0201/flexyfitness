@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
         <title>OBBC Holdtilmelding</title>
         <link href='https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons' rel="stylesheet">
-        <link rel="stylesheet" href="/assets/css/app.css">
+        <link rel="stylesheet" href="{{ mix('/assets/css/app.css') }}">
     </head>
     <body>
         <div id="app">
@@ -17,6 +17,6 @@
             </v-app>
         </div>
 
-        <script src="/assets/js/app.js"></script>
+        <script src="{{ mix('/assets/js/app.js') }}"></script>
     </body>
 </html>
