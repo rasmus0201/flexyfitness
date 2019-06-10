@@ -10,6 +10,9 @@
 
             <v-spacer></v-spacer>
 
+            <v-btn v-if="auth" icon :disabled="refreshing" @click="refresh">
+                <v-icon>refresh</v-icon>
+            </v-btn>
             <v-btn
                 v-for="item in navItems"
                 v-if="(item.auth && auth) || (!item.auth && !auth)"
@@ -66,13 +69,22 @@
 </template>
 
 <script>
+    import EventBus from '../event-bus';
+
     export default {
         data() {
             return {
                 drawer: null,
                 width: 250,
+                refreshing: false,
                 appName: this.$store.state.appName
             }
+        },
+
+        mounted() {
+            EventBus.$on('refresh-done', () => {
+                this.refreshing = false;
+            });
         },
 
         computed: {
@@ -90,6 +102,12 @@
         },
 
         methods: {
+            refresh() {
+                this.refreshing = true;
+
+                EventBus.$emit('refresh', true);
+            },
+
             nav() {
                 return [
                     {
@@ -98,12 +116,6 @@
                         icon: 'account_circle',
                         auth: false,
                         nav: true
-                    },
-                    {
-                        title: 'Kalender',
-                        route: 'calendar',
-                        icon: 'calendar_today',
-                        auth: true
                     },
                     {
                         title: 'Log ud',

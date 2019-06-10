@@ -1,70 +1,56 @@
 <template>
     <div class="bookings">
-        <pull-to :top-load-method="refresh" :top-config="pullToConfig">
-            <v-layout justify-content-center align-items-center py-0 class="bookings__title">
-                Tilmeldinger
+        <v-layout justify-content-center align-items-center py-0 class="bookings__title">
+            Tilmeldinger
+        </v-layout>
+
+        <loader :loading="loading" class="mt-3"></loader>
+        <template v-if="!loading">
+            <v-layout column v-for="(day, indexA) in bookings" :key="`day-${indexA}`">
+                <v-card v-if="day.bookings.length" class="mb-2 mt-3" width="100%">
+                    <v-card-title v-if="day.date == 'I morgen'">
+                        I morgen
+                    </v-card-title>
+                    <v-card-title v-else>
+                        {{ [day.date, 'DD/MM/YYYY'] | moment('ddd [d.] Do MMM [-] YYYY') }}
+                    </v-card-title>
+                </v-card>
+
+                <booking v-for="(booking, indexB) in day.bookings" :key="`booking-${indexB}`" :item="booking" @left="remove($event)"></booking>
             </v-layout>
-
-            <loader :loading="loading" class="mt-3"></loader>
-            <template v-if="!loading">
-                <v-layout column v-for="(day, indexA) in bookings" :key="`day-${indexA}`">
-                    <v-card v-if="day.bookings.length" class="mb-2 mt-3" width="100%">
-                        <v-card-title v-if="day.date == 'I morgen'">
-                            I morgen
-                        </v-card-title>
-                        <v-card-title v-else>
-                            {{ [day.date, 'DD/MM/YYYY'] | moment('ddd [d.] Do MMM [-] YYYY') }}
-                        </v-card-title>
-                    </v-card>
-
-                    <booking v-for="(booking, indexB) in day.bookings" :key="`booking-${indexB}`" :item="booking" @left="remove($event)"></booking>
-                </v-layout>
-                <v-layout v-if="this.bookings.length === 0" mx-3 mt-3>
-                    <v-alert :value="true" type="info" class="w-100">
-                        Du er ikke tilmeldt nogen hold.
-                    </v-alert>
-                </v-layout>
-            </template>
-        </pull-to>
+            <v-layout v-if="this.bookings.length === 0" mx-3 mt-3>
+                <v-alert :value="true" type="info" class="w-100">
+                    Du er ikke tilmeldt nogen hold.
+                </v-alert>
+            </v-layout>
+        </template>
     </div>
 </template>
 
 <script>
-    import PullTo from 'vue-pull-to';
     import _ from 'lodash';
+    import EventBus from '../event-bus';
 
     export default {
         data() {
             return {
                 loading: false,
-                bookings: [],
-                pullToConfig: {
-                    pullText: 'Henter',
-                    triggerText: 'Genindlæs',
-                    loadingText: 'Henter...',
-                    doneText: '',
-                    failText: 'Fejl',
-                    loadedStayTime: 200
-                }
+                bookings: []
             }
         },
 
-        components: {
-            PullTo
-        },
-
         mounted() {
+            EventBus.$on('refresh', this.refresh);
             this.getBookings();
         },
 
         methods: {
-            refresh(loaded) {
+            refresh() {
+                this.loading = false;
+
                 this.getBookings(true)
-                    .then(() => {
-                        loaded('done');
-                    })
-                    .catch(() => {
-                        loaded('fail');
+                    .finally(() => {
+                        EventBus.$emit('refresh-done');
                     });
             },
 

@@ -17,6 +17,9 @@ import '@mdi/font/css/materialdesignicons.css';
 import 'es6-promise/auto';
 import 'babel-polyfill';
 
+VueHammer.config.swipe = {
+    direction: 6
+};
 Vue.use(VueHammer);
 Vue.use(VueMoment, {
     moment
