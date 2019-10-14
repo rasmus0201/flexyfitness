@@ -49,6 +49,7 @@
 
 <script>
     import FileSaver from 'file-saver';
+    import EventBus from '../event-bus';
 
     export default {
         data() {
@@ -61,10 +62,13 @@
 
         mounted() {
             this.fetch();
+
+            EventBus.$on('refresh', this.fetch);
         },
 
         methods: {
             fetch() {
+                this.loading = true;
                 const url = '/api/user/mydata';
 
                 axios.post(url, { token: this.$store.state.token })
@@ -76,6 +80,7 @@
                     })
                     .finally(() => {
                         this.loading = false;
+                        EventBus.$emit('refresh-done');
                     });
             },
 

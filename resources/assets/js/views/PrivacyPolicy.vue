@@ -5,25 +5,28 @@
                 <h1>Privatlivspolitik</h1>
                 <p>
                     Fortegnelse over behandling af personoplysninger.
-                    Dato for seneste ajourføring af dokumentet: 21.05.2019
+                    Dato for seneste ajourføring af dokumentet: 14.10.2019
                 </p>
 
                 <p class="text-primary mb-0">
                     Den korte version:
                 </p>
                 <p class="mb-3">
-                    Vi gemmer kun din log-ind detaljer (medlemsnr/tlf/email og adgangskode) på din egen enhed (localStorage & cookies) og på din adgangskode er kun gemt som hashværdi på vores servere - det er muligt at se hvilke data der ligger på vores servere omrking dig, samt slette data.
-                    Forbindelsen mellem dig og vores servere er krypteret med SSL.
+                    Vi gemmer kun dine log-ind detaljer (medlemsnr/tlf/email og adgangskode) på din egen enhed (localStorage & cookies) og din adgangskode er kun gemt som hashværdi på vores servere. Du har mulighed, for at se hvilke data der ligger på vores servere omkring dig, samt slette data. Hver gang der bliver lavet forespørgsel på noget data bliver dine krypterede log-ind detaljer sendt til vores servere som dekryptere dem og logger dig ind på Flexybox-hjemmesiden og finder det data du forespørger. Forbindelsen mellem dig og vores servere er krypteret med SSL. Forbindelsen mellem Flexybox og vores servere er krypteret med SSL.
                     Hvis der skulle ske et datalæk vil vi foresøge at underette de involverede parter, men da vi ikke kender e-mails på brugere er det svært at målrette en sådan besked.
                 </p>
 
                 <faq v-for="(faq, index) in faqs" :key="index" :question="faq.question" :answer="faq.answer"></faq>
+
+                <p class="font-weight-bold">PS: Kildekoden til denne hjemmeside kan ses <a href="https://github.com/rasmus0201/flexyfitness" target="_blank">her</a>.</p>
             </v-flex>
         </v-layout>
     </v-container>
 </template>
 
 <script>
+    import EventBus from '../event-bus';
+
     export default {
         data() {
             return {
@@ -116,6 +119,16 @@
                         }
                     }
                 ]
+            }
+        },
+
+        mounted() {
+            EventBus.$on('refresh', this.refresh);
+        },
+
+        methods: {
+            refresh() {
+                EventBus.$emit('refresh-done');
             }
         }
     }

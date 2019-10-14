@@ -239,7 +239,7 @@
                                 color: 'error'
                             });
 
-                            reject();
+                            reject(error);
                         })
                         .finally(() => {
                             this.loading = false;

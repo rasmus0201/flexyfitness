@@ -10,7 +10,7 @@
 
             <v-spacer></v-spacer>
 
-            <v-btn v-if="auth" icon :disabled="refreshing" @click="refresh">
+            <v-btn v-if="auth" icon :disabled="refreshing" @click="refresh" title="Tving genindlæsning">
                 <v-icon>refresh</v-icon>
             </v-btn>
             <v-btn
@@ -18,6 +18,7 @@
                 v-if="(item.auth && auth) || (!item.auth && !auth)"
                 :key="item.title"
                 :to="{ name: item.route }"
+                :title="item.title"
                 exact
                 replace
                 icon
