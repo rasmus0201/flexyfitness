@@ -61,6 +61,7 @@
             :date="calendar.date"
             :items="calendar.items"
             v-hammer:swipe.horizontal="swipe"
+            class="calendar__view"
         ></flexybox-calendar-view>
     </div>
 </template>
@@ -115,7 +116,7 @@
 
         methods: {
             onResize: _.throttle(function () {
-                this.calendar.view = window.innerWidth > 994 ? 'week' : 'day';
+                this.calendar.view = window.innerWidth >= 992 ? 'week' : 'day';
             }, 300),
 
             refresh() {
@@ -131,6 +132,9 @@
 
             swipe(event) {
                 if (this.loading) { return; }
+
+                // Only day view can be swiped.
+                if (this.calendar.view !== 'day') { return; }
 
                 switch(event.direction) {
                     case Hammer.DIRECTION_LEFT:

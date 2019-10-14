@@ -84,6 +84,14 @@
         }
     }
 
+    &__view {
+        cursor: grab;
+
+        @include media-breakpoint-up(lg) {
+            cursor: default;
+        }
+    }
+
     &__card {
         flex-grow: 1;
         flex-shrink: 0;
