@@ -14,7 +14,7 @@
         "@mdi/font": "^3.9.96",
         "cross-env": "^5.2.0",
         "laravel-mix": "^4.1.2",
-        "lodash": ">=4.17.13",
+        "lodash": ">=4.17.21",
         "resolve-url-loader": "^2.3.1",
         "sass": "^1.22.9",
         "sass-loader": "^7.1.0",
